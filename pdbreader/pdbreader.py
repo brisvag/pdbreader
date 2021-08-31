@@ -12,17 +12,17 @@ def parse_line(line):
     """
     line = line.strip()
 
-    for record, spec in SPECIFICATION.items():
-        if line.startswith(record):
+    for record_type, spec in SPECIFICATION.items():
+        if line.startswith(record_type):
             items = []
             for rng, dtype, _ in spec:
                 field = line[rng[0]:rng[1]]
                 try:
                     field = dtype(field.strip())
                 except ValueError:
-                    field = pd.nan
+                    field = None
                 items.append(field)
-            return record, items
+            return record_type, items
     return None, None
 
 
@@ -32,14 +32,13 @@ def parse_pdb(path):
 
     data = defaultdict(list)
     for line in lines:
-        record, fields = parse_line(line)
-        if record is not None:
-            data[record].append(fields)
+        record_type, fields = parse_line(line)
+        if record_type is not None:
+            data[record_type].append(fields)
 
     dfs = defaultdict(list)
-    for record, fields in data.items():
-        _, _, columns = zip(*SPECIFICATION[record])
+    for record_type, fields in data.items():
+        _, _, columns = zip(*SPECIFICATION[record_type])
         df = pd.DataFrame(fields, columns=columns)
-        df['record'] = record
-        dfs[record] = df
+        dfs[record_type] = df
     return dict(dfs)
