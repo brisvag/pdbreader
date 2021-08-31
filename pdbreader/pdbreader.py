@@ -5,32 +5,25 @@ import pandas as pd
 from .specification import SPECIFICATION
 
 
-def slice_str(str, ranges):
+def parse_line(line):
     """
     slice a string in specific spots (must include edges,
-    left inclusive and right exclusive)
+    left inclusive and right exclusive) and return appropriate types
     """
-    items = []
-    for rng in ranges:
-        field = str[rng[0]:rng[1]]
-        items.append(field.strip())
-    return items
-
-
-def slice_line(line):
     line = line.strip()
+
     for record, spec in SPECIFICATION.items():
         if line.startswith(record):
-            fields = slice_str(line, spec['slices'])
-            fields_typed = []
-            for field, dtype in zip(fields, spec['dtypes']):
+            items = []
+            for rng, dtype, _ in spec:
+                field = line[rng[0]:rng[1]]
                 try:
-                    field = dtype(field)
+                    field = dtype(field.strip())
                 except ValueError:
                     field = pd.nan
-                fields_typed.append(field)
-            return record, fields
-    return None, []
+                items.append(field)
+            return record, items
+    return None, None
 
 
 def parse_pdb(path):
@@ -39,13 +32,13 @@ def parse_pdb(path):
 
     data = defaultdict(list)
     for line in lines:
-        record, fields = slice_line(line)
+        record, fields = parse_line(line)
         if record is not None:
             data[record].append(fields)
 
     dfs = defaultdict(list)
     for record, fields in data.items():
-        columns = SPECIFICATION[record]['columns']
+        _, _, columns = zip(*SPECIFICATION[record])
         df = pd.DataFrame(fields, columns=columns)
         df['record'] = record
         dfs[record] = df

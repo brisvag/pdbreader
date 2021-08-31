@@ -1,7 +1,21 @@
 SPECIFICATION = {
-    'ATOM': {
-        'columns': ['id', 'name', 'loc_indicator', 'resname', 'chain', 'resid', 'res_insertion_code', 'x', 'y', 'z', 'occupancy', 'b-factor', 'segment', 'element', 'charge'],
-        'slices': [(6, 11), (12, 16), (16, 17), (17, 20), (21, 22), (22, 26), (26, 27), (30, 38), (38, 46), (46, 54), (54, 60), (60, 66), (72, 76), (76, 78), (78, 80)],
-        'dtypes': [int, str, str, str, str, int, str, float, float, float, float, float, str, str, str],
-    },
+    'ATOM': [
+        ((6, 11), int, 'id'),
+        ((12, 16), str, 'name'),
+        ((16, 17), str, 'loc_indicator'),
+        ((17, 20), str, 'resname'),
+        ((21, 22), str, 'chain'),
+        ((22, 26), int, 'resid'),
+        ((26, 27), str, 'res_insertion_code'),
+        ((30, 38), float, 'x'),
+        ((38, 46), float, 'y'),
+        ((46, 54), float, 'z'),
+        ((54, 60), float, 'occupancy'),
+        ((60, 66), float, 'b-factor'),
+        ((72, 76), str, 'segment'),
+        ((76, 78), str, 'element'),
+        ((78, 80), str, 'charge'),
+    ],
 }
+
+SPECIFICATION['HETATM'] = SPECIFICATION['ATOM']
