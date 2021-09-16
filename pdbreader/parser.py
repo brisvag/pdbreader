@@ -36,7 +36,7 @@ def parse_line(line, mdl_idx=0):
     return None, None
 
 
-def parse_pdb(path):
+def read_pdb(path):
     with open(path, 'r') as f:
         lines = f.readlines()
 

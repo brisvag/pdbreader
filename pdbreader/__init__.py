@@ -1,2 +1,2 @@
-from .parser import parse_pdb
+from .parser import read_pdb
 from .specification import SPECIFICATION
