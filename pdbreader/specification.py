@@ -2,7 +2,7 @@ ATOM = [
     ((0, 0), None, 'model_id'),  # special empty column to add model id
     ((6, 11), int, 'id'),
     ((12, 16), str, 'name'),
-    ((16, 17), str, 'loc_indicator'),
+    ((16, 17), str, 'alt_location'),
     ((17, 20), str, 'resname'),
     ((21, 22), str, 'chain'),
     ((22, 26), int, 'resid'),

@@ -3,6 +3,7 @@ from collections import defaultdict
 import pandas as pd
 
 from .specification import SPECIFICATION
+from .bonds import guess_bonds as guess_bonds_func
 
 
 def parse_line(line, mdl_idx=0):
@@ -36,7 +37,7 @@ def parse_line(line, mdl_idx=0):
     return None, None
 
 
-def read_pdb(path):
+def read_pdb(path, guess_bonds=True):
     with open(path, 'r') as f:
         lines = f.readlines()
 
@@ -58,5 +59,12 @@ def read_pdb(path):
         _, _, columns = zip(*SPECIFICATION[record_type])
         df = pd.DataFrame(fields, columns=columns)
         data[record_type] = df
+
+    if guess_bonds:
+        for atm_type in ('ATOM', 'HETATM'):
+            atoms = data.get(atm_type, [])
+            bonds = guess_bonds_func(atoms)
+            if bonds.size > 0:
+                data[f'{atm_type}_BONDS_GUESSED'] = pd.DataFrame(bonds, columns=['atom1', 'atom2'])
 
     return dict(data)
