@@ -38,16 +38,33 @@ def guess_bonds(atoms, fudge=1.2):
     dists = np.array(dists)[non_duplicate]
     bonds = dists <= vdw_dists
 
-    # find inter-residue H-bonds
+    # inter-residue H-bonds
     hydro = np.any(elem_pairs == 'H', axis=1)
     resid = atoms['resid'].to_numpy()
     same_resid = np.equal.reduce(resid[pairs], axis=1)
-    hydro_same_resid = np.logical_and(hydro, same_resid)
+    hydro_different_resid = np.logical_and(hydro, ~same_resid)
+
+    # same chain
+    chain = atoms['chain'].to_numpy()
+    same_chain = np.equal.reduce(chain[pairs], axis=1)
+
+    # same model
+    model = atoms['model'].to_numpy()
+    same_model = np.equal.reduce(model[pairs], axis=1)
+
+    # alternate loc indicator
+    # alt_loc = atoms['alt_location'].to_numpy()
+    # TODO
 
     # find where both are hydrogens
     both_hydro = np.all(elem_pairs == 'H', axis=1)
 
-    # discard if inter-residue H-bonds or both hydrogens
-    keep = np.logical_and(~both_hydro, ~hydro_same_resid)
+    # keep only if not inter-residue H-bonds, both hydrogens, different chains/models
+    keep = np.logical_and(
+        ~both_hydro,
+        ~hydro_different_resid,
+        same_chain,
+        same_model,
+    )
 
     return pairs[np.logical_and(bonds, keep)]
