@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.spatial.ckdtree import cKDTree
 
-from .atom_data import VDW
+from .vdw import VDW
 
 
 def guess_bonds(atoms, fudge=1.2):
