@@ -49,7 +49,7 @@ def guess_bonds(atoms, fudge=1.2):
     same_chain = np.equal.reduce(chain[pairs], axis=1)
 
     # same model
-    model = atoms['model'].to_numpy()
+    model = atoms['model_id'].to_numpy()
     same_model = np.equal.reduce(model[pairs], axis=1)
 
     # alternate loc indicator
