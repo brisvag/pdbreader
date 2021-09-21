@@ -23,11 +23,6 @@ def parse_line(line, mdl_idx=0):
                 else:
                     # split the line based on the specs
                     field = line[rng[0]:rng[1]]
-                    if colname == 'bonds':
-                        # special case for CONECT records, split the field in a list
-                        field = [field[i * 5: (i + 1) * 5].strip() for i in range(9)]
-                        items.append([int(f) for f in field if f != ''])
-                        continue
                     try:
                         field = dtype(field.strip()) or None
                     except ValueError:
@@ -60,11 +55,27 @@ def read_pdb(path, guess_bonds=True):
         df = pd.DataFrame(fields, columns=columns)
         data[record_type] = df
 
+    # merge ATOM and HETATM for ease of processing
+    atoms = []
+    for atm_type in ('ATOM', 'HETATM'):
+        try:
+            some_atoms = data.pop(atm_type)
+        except KeyError:
+            continue
+        some_atoms['type'] = atm_type
+        atoms.append(some_atoms)
+    if len(atoms) > 0:
+        data['ATOMS'] = pd.concat(atoms, ignore_index=True)
+
+    # clean up CONECT so it's 1 to 1 column
+    if 'CONECT' in data:
+        conect = data['CONECT'].melt('atom1', value_name='atom2').drop('variable', 1)
+        conect = conect.dropna().astype(int)
+        data['CONECT'] = conect
+
     if guess_bonds:
-        for atm_type in ('ATOM', 'HETATM'):
-            atoms = data.get(atm_type, [])
-            bonds = guess_bonds_func(atoms)
-            if bonds.size > 0:
-                data[f'{atm_type}_BONDS_GUESSED'] = pd.DataFrame(bonds, columns=['atom1', 'atom2'])
+        bonds = guess_bonds_func(data['ATOMS'])
+        if bonds.size > 0:
+            data[f'BONDS_GUESSED'] = pd.DataFrame(bonds, columns=['atom1', 'atom2'])
 
     return dict(data)

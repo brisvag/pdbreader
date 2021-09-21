@@ -18,8 +18,17 @@ ATOM = [
 ]
 
 CONECT = [
-    ((6, 11), int, 'parent'),
-    ((11, 61), list, 'bonds'),
+    ((6, 11), int, 'atom1'),
+    ((11, 16), int, 'bond0'),
+    ((16, 21), int, 'bond1'),
+    ((21, 26), int, 'bond2'),
+    ((26, 31), int, 'bond3'),
+    ((31, 36), int, 'bond4'),
+    ((36, 41), int, 'bond5'),
+    ((41, 46), int, 'bond6'),
+    ((46, 51), int, 'bond7'),
+    ((51, 56), int, 'bond8'),
+    ((56, 61), int, 'bond9'),
 ]
 
 MODEL = [

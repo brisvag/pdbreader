@@ -60,11 +60,11 @@ def guess_bonds(atoms, fudge=1.2):
     both_hydro = np.all(elem_pairs == 'H', axis=1)
 
     # keep only if not inter-residue H-bonds, both hydrogens, different chains/models
-    keep = np.logical_and(
+    keep = np.logical_and.reduce([
         ~both_hydro,
         ~hydro_different_resid,
         same_chain,
         same_model,
-    )
+    ])
 
     return pairs[np.logical_and(bonds, keep)]
