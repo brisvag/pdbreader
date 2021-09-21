@@ -69,6 +69,7 @@ def read_pdb(path, guess_bonds=True):
 
     # clean up CONECT so it's 1 to 1 column
     if 'CONECT' in data:
+        # melt df and drop variable names (every column is equivalent except atom1)
         conect = data['CONECT'].melt('atom1', value_name='atom2').drop('variable', 1)
         conect = conect.dropna().astype(int)
         data['CONECT'] = conect
